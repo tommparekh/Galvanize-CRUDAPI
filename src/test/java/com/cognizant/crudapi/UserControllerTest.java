@@ -33,20 +33,6 @@ public class UserControllerTest {
     @Rollback
     public void getUserTest() throws Exception {
 
-        User user1 = new User();
-        user1.setId(1);
-        user1.setEmail("john@example.com");
-        user1.setPassword("user1pwd");
-
-        User user2 = new User();
-        user2.setId(2);
-        user2.setEmail("eliza@example.com");
-        user2.setPassword("user2pwd");
-
-        List<User> userList = Arrays.asList(user1, user2);
-        userRepository.saveAll(userList);
-
-
         RequestBuilder requestBuilder = get("/users")
                 .contentType(MediaType.APPLICATION_JSON);
         mockMvc.perform(requestBuilder).andExpect(status().isOk())
@@ -58,20 +44,6 @@ public class UserControllerTest {
     @Transactional
     @Rollback
     public void postUserTest() throws Exception {
-//
-//
-//        User user1 = new User();
-//        user1.setId(1);
-//        user1.setEmail("john@example.com");
-//        user1.setPassword("user1pwd");
-//
-//        User user2 = new User();
-//        user2.setId(2);
-//        user2.setEmail("eliza@example.com");
-//        user2.setPassword("user2pwd");
-//
-//        List<User> userList = Arrays.asList(user1, user2);
-//        userRepository.saveAll(userList);
 
         String requestBody = "{\n" +
                 "    \"email\": \"Jimmy@example.com\",\n" +
