@@ -58,20 +58,20 @@ public class UserControllerTest {
     @Transactional
     @Rollback
     public void postUserTest() throws Exception {
-
-
-        User user1 = new User();
-        user1.setId(1);
-        user1.setEmail("john@example.com");
-        user1.setPassword("user1pwd");
-
-        User user2 = new User();
-        user2.setId(2);
-        user2.setEmail("eliza@example.com");
-        user2.setPassword("user2pwd");
-
-        List<User> userList = Arrays.asList(user1, user2);
-        userRepository.saveAll(userList);
+//
+//
+//        User user1 = new User();
+//        user1.setId(1);
+//        user1.setEmail("john@example.com");
+//        user1.setPassword("user1pwd");
+//
+//        User user2 = new User();
+//        user2.setId(2);
+//        user2.setEmail("eliza@example.com");
+//        user2.setPassword("user2pwd");
+//
+//        List<User> userList = Arrays.asList(user1, user2);
+//        userRepository.saveAll(userList);
 
         String requestBody = "{\n" +
                 "    \"email\": \"Jimmy@example.com\",\n" +
@@ -82,6 +82,6 @@ public class UserControllerTest {
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(requestBody);
         mockMvc.perform(requestBuilder).andExpect(status().isOk())
-                .andExpect(content().string("[{\"id\":3,\"email\":\"Jimmy@example.com\"}"));
+                .andExpect(content().string("{\"id\":3,\"email\":\"Jimmy@example.com\"}"));
     }
 }

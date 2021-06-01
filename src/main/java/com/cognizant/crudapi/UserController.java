@@ -32,7 +32,7 @@ public class UserController {
     }
 
     @PostMapping("/users")
-    public UserResponse getUsers(@RequestBody User user) {
+    public UserResponse postUsers(@RequestBody User user) {
         populateData();
         User userSaved = userRepository.save(user);
         return convertToUserResponse(userSaved);
