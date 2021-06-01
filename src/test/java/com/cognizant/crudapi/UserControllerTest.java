@@ -11,11 +11,7 @@ import org.springframework.test.web.servlet.RequestBuilder;
 
 import javax.transaction.Transactional;
 
-import java.util.Arrays;
-import java.util.List;
-
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -56,4 +52,85 @@ public class UserControllerTest {
         mockMvc.perform(requestBuilder).andExpect(status().isOk())
                 .andExpect(content().string("{\"id\":3,\"email\":\"Jimmy@example.com\"}"));
     }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void getUserByIdTest() throws Exception {
+        RequestBuilder requestBuilder = get("/users/2")
+                .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(requestBuilder).andExpect(status().isOk())
+                .andExpect(content().string("{\"id\":2,\"email\":\"eliza@example.com\"}"));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void patchUserByIdTest() throws Exception {
+        String requestBody = "{\n" +
+                "  \"email\": \"bob@example.com\"\n" +
+                "}";
+
+        RequestBuilder requestBuilder = patch("/users/2")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody);
+        mockMvc.perform(requestBuilder).andExpect(status().isOk())
+                .andExpect(content().string("{\"id\":2,\"email\":\"bob@example.com\"}"));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void deleteUserByIdTest() throws Exception {
+        RequestBuilder requestBuilder = delete("/users/2")
+                .contentType(MediaType.APPLICATION_JSON);
+        mockMvc.perform(requestBuilder).andExpect(status().isOk())
+                .andExpect(content().string("{\"count\":1" + "}"));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void postUserAuthenticateTest() throws Exception {
+
+        String requestBody = "{\n" +
+                "  \"email\": \"john@example.com\",\n" +
+                "  \"password\": \"user1pwd\"\n" +
+                "}";
+
+        RequestBuilder requestBuilder = post("/users/authenticate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody);
+
+        String expectedResponse = "{" +
+                "\"authenticated\": true," +
+                "\"user\": {" +
+                "\"id\": 12," +
+                "\"email\": \"angelica@example.com\"" +
+                "}" +
+                "}";
+        mockMvc.perform(requestBuilder).andExpect(status().isOk())
+                .andExpect(content().string(expectedResponse));
+    }
+
+    @Test
+    @Transactional
+    @Rollback
+    public void postUserAuthenticateFailTest() throws Exception {
+
+        String requestBody = "{\n" +
+                "  \"email\": \"john@example.com\",\n" +
+                "  \"password\": \"user2pwd\"\n" +
+                "}";
+
+        RequestBuilder requestBuilder = post("/users/authenticate")
+                .contentType(MediaType.APPLICATION_JSON)
+                .content(requestBody);
+
+        String expectedResponse = "{" +
+                "\"authenticated\":false" + "}";
+        mockMvc.perform(requestBuilder).andExpect(status().isOk())
+                .andExpect(content().string(expectedResponse));
+    }
+
 }

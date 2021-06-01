@@ -1,13 +1,11 @@
 package com.cognizant.crudapi;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 @RestController
@@ -25,7 +23,7 @@ public class UserController {
         userRepository.findAll().forEach(userList::add);
 
         List<UserResponse> userRespList = new ArrayList<>();
-        for(User user : userList) {
+        for (User user : userList) {
             userRespList.add(convertToUserResponse(user));
         }
         return userRespList;
@@ -37,6 +35,57 @@ public class UserController {
         User userSaved = userRepository.save(user);
         return convertToUserResponse(userSaved);
     }
+
+
+    @PostMapping("/users/authenticate")
+    public UserAuthenticationResponse postUsersAuthentication(@RequestBody User user) {
+        populateData();
+        User userSaved = userRepository.findByEmail(user.getEmail());
+        UserAuthenticationResponse userAuthenticationResponse = new UserAuthenticationResponse();
+        userAuthenticationResponse.setAuthenticated(false);
+        if (userSaved == null) {
+            return userAuthenticationResponse;
+        } else {
+            if (userSaved.getPassword().equals(user.getPassword())) {
+                UserResponse userResponse = new UserResponse();
+                userResponse.setId(userSaved.getId());
+                userResponse.setEmail(user.getEmail());
+                userAuthenticationResponse.setUserResponse(userResponse);
+                userAuthenticationResponse.setAuthenticated(true);
+            }
+            return userAuthenticationResponse;
+        }
+    }
+
+
+    @GetMapping("/users/{id}")
+    public UserResponse getUsersById(@PathVariable int id) {
+        populateData();
+        User userSaved = userRepository.findById(id);
+        return convertToUserResponse(userSaved);
+    }
+
+    @PatchMapping("/users/{id}")
+    public UserResponse patchUserById(@PathVariable int id, @RequestBody User user) {
+        populateData();
+        User userSaved = userRepository.findById(id);
+        userSaved.setEmail(user.getEmail() == null ? userSaved.getEmail() : user.getEmail());
+        userSaved.setPassword(user.getPassword() == null ? userSaved.getPassword() : user.getPassword());
+        return convertToUserResponse(userSaved);
+    }
+
+    @DeleteMapping("/users/{id}")
+    public UserDeleteResponse deleteUserById(@PathVariable int id) {
+        populateData();
+        userRepository.deleteById(id);
+
+        Collection<User> userCollection = (Collection<User>) userRepository.findAll();
+
+        UserDeleteResponse userDeleteResponse = new UserDeleteResponse();
+        userDeleteResponse.setCount(userCollection.size());
+        return userDeleteResponse;
+    }
+
 
     private UserResponse convertToUserResponse(User userSaved) {
         UserResponse response = new UserResponse();
